@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>wayk collect</title>
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-2: #262626;
+  --text: #f5f5f5;
+  --text-2: #a3a3a3;
+  --border: #333;
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --accent-soft: rgba(249,115,22,0.15);
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+[data-theme="white"] {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f0f0f0;
+  --text: #171717;
+  --text-2: #737373;
+  --border: #e5e5e5;
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --accent-soft: rgba(249,115,22,0.1);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+[data-theme="pastel"] {
+  --bg: #fdf6f0;
+  --surface: #fffaf5;
+  --surface-2: #fef0e6;
+  --text: #3d2c1e;
+  --text-2: #8a7564;
+  --border: #f0e0d0;
+  --accent: #f59e6b;
+  --accent-hover: #e8854a;
+  --accent-soft: rgba(245,158,107,0.2);
+  --shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+[data-theme="orange"] {
+  --bg: #1a0f0a;
+  --surface: #2a1a10;
+  --surface-2: #3a2518;
+  --text: #fff3ed;
+  --text-2: #c9a68c;
+  --border: #4a3020;
+  --accent: #ff8c42;
+  --accent-hover: #ff7828;
+  --accent-soft: rgba(255,140,66,0.2);
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100dvh;padding:0 0 80px;
+  -webkit-font-smoothing:antialiased;
+}
+.container{max-width:480px;margin:0 auto;padding:16px}
+
+/* header */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0 8px;position:sticky;top:0;z-index:10;
+  background:var(--bg);
+}
+.header h1{
+  font-size:22px;font-weight:700;letter-spacing:-0.5px;
+}
+.header h1 span{color:var(--accent)}
+.theme-row{display:flex;gap:8px}
+.theme-dot{
+  width:28px;height:28px;border-radius:50%;border:2px solid var(--border);
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;
+  font-size:14px;background:var(--surface);
+}
+.theme-dot.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.theme-dot.black{background:#0d0d0d;color:#fff}
+.theme-dot.white{background:#fafafa;color:#171717}
+.theme-dot.pastel{background:#fdf6f0;color:#3d2c1e}
+.theme-dot.orange{background:#ff8c42;color:#fff}
+
+/* tabs */
+.tabs{display:flex;gap:0;margin:12px 0;background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.tab{
+  flex:1;padding:10px;text-align:center;cursor:pointer;
+  font-size:14px;font-weight:500;color:var(--text-2);transition:all .15s;
+  border:none;background:transparent;
+}
+.tab.active{background:var(--accent);color:#fff}
+.tab:not(.active):hover{background:var(--surface-2)}
+
+/* cards */
+.card{
+  background:var(--surface);border-radius:var(--radius);
+  border:1px solid var(--border);padding:16px;margin-bottom:10px;
+  box-shadow:var(--shadow);
+}
+.card label{display:block;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
+input,textarea{
+  width:100%;padding:10px 12px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:15px;outline:none;
+  font-family:inherit;transition:border .15s;
+}
+input:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+.input-group{margin-bottom:10px}
+
+.btn{
+  padding:10px 20px;border:none;border-radius:8px;font-size:15px;font-weight:600;
+  cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;
+  justify-content:center;
+}
+.btn-primary{background:var(--accent);color:#fff;width:100%}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-outline{
+  background:transparent;border:1px solid var(--border);color:var(--text);
+}
+.btn-outline:hover{background:var(--surface-2)}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-danger:hover{background:#dc2626}
+
+/* multi textarea */
+.multi-area{min-height:120px;font-size:14px}
+
+/* list */
+.list-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:20px 0 10px;
+}
+.list-header h2{font-size:16px;font-weight:600}
+.count{font-size:13px;color:var(--text-2);background:var(--surface);padding:2px 10px;border-radius:20px;border:1px solid var(--border)}
+
+.influencer-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:6px;box-shadow:var(--shadow);
+  transition:all .15s;
+}
+.influencer-item .top{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.influencer-item .name{
+  font-size:15px;font-weight:500;word-break:break-word;flex:1;
+}
+.influencer-item .platform-badge{
+  font-size:11px;background:var(--accent-soft);color:var(--accent);
+  padding:2px 8px;border-radius:4px;white-space:nowrap;
+}
+.influencer-item .actions{display:flex;gap:4px;flex-shrink:0}
+.notes-toggle{
+  font-size:12px;color:var(--accent);cursor:pointer;margin-top:6px;display:inline-block;
+}
+.notes-body{
+  margin-top:8px;padding:8px 10px;background:var(--surface-2);border-radius:6px;
+  font-size:13px;color:var(--text-2);line-height:1.5;white-space:pre-wrap;display:none;
+}
+.notes-body.open{display:block}
+
+/* export row */
+.export-row{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+.export-row .btn{flex:1;min-width:0}
+
+/* empty */
+.empty{text-align:center;padding:40px 20px;color:var(--text-2);font-size:14px}
+
+/* footer */
+.footer{text-align:center;padding:20px;color:var(--text-2);font-size:12px}
+.footer a{color:var(--accent);text-decoration:none}
+
+/* toast */
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#fff;padding:10px 20px;border-radius:8px;
+  font-size:13px;font-weight:500;z-index:100;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+  white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;
+}
+.toast.show{opacity:1}
+
+@media(min-width:640px){
+  .container{max-width:500px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>wayk <span>collect</span></h1>
+    <div class="theme-row">
+      <div class="theme-dot black active" data-theme-val="black" title="Black">◆</div>
+      <div class="theme-dot white" data-theme-val="white" title="White">◇</div>
+      <div class="theme-dot pastel" data-theme-val="pastel" title="Pastel">○</div>
+      <div class="theme-dot orange" data-theme-val="orange" title="Orange">●</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="single">Single</button>
+    <button class="tab" data-tab="multi">Multi</button>
+  </div>
+
+  <!-- single add -->
+  <div class="card" id="panel-single">
+    <div class="input-group">
+      <label>Influencer</label>
+      <input type="text" id="input-name" placeholder="@username or full name" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label>Notes</label>
+      <textarea id="input-notes" placeholder="notes, platform, niche..." rows="2"></textarea>
+    </div>
+    <button class="btn btn-primary" id="btn-add">+ Add Influencer</button>
+  </div>
+
+  <!-- multi add -->
+  <div class="card" id="panel-multi" style="display:none">
+    <div class="input-group">
+      <label>One per line</label>
+      <textarea class="multi-area" id="input-multi" placeholder="@influencer1&#10;@influencer2&#10;@influencer3"></textarea>
+    </div>
+    <button class="btn btn-primary" id="btn-add-multi">+ Add All</button>
+  </div>
+
+  <div class="list-header">
+    <h2>Influencers</h2>
+    <span class="count" id="count">0</span>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="export-row">
+    <button class="btn btn-outline btn-sm" id="btn-export-json">Export JSON</button>
+    <button class="btn btn-outline btn-sm" id="btn-export-text">Export Text</button>
+    <button class="btn btn-danger btn-sm" id="btn-clear">Clear All</button>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/theikbhal/wayk-influencer-collect" target="_blank">GitHub</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_INFLUENCERS = [
+  { id: 1, name: "jadwayk", notes: "instagram.com/jadwayk", createdAt: new Date().toISOString() }
+];
+
+let influencers = [];
+
+// load
+function load(){
+  try{
+    const d = localStorage.getItem('wayk_influencers');
+    influencers = d ? JSON.parse(d) : [...DEFAULT_INFLUENCERS.map(x=>({...x}))];
+  }catch(e){influencers = [...DEFAULT_INFLUENCERS];}
+  if(!influencers.length) influencers = [...DEFAULT_INFLUENCERS];
+}
+function save(){
+  localStorage.setItem('wayk_influencers', JSON.stringify(influencers));
+  render();
+}
+
+function render(){
+  const list = document.getElementById('list');
+  const count = document.getElementById('count');
+  count.textContent = influencers.length;
+  if(!influencers.length){
+    list.innerHTML = '<div class="empty">No influencers yet. Add one above.</div>';
+    return;
+  }
+  list.innerHTML = influencers.map(inf => {
+    const hasNotes = inf.notes && inf.notes.trim();
+    const notePreview = hasNotes ? inf.notes.slice(0, 40) + (inf.notes.length > 40 ? '...' : '') : '';
+    return `<div class="influencer-item" data-id="${inf.id}">
+      <div class="top">
+        <div>
+          <div class="name">${escHtml(inf.name)}</div>
+          ${notePreview ? `<div class="notes-toggle" onclick="toggleNotes(${inf.id})">${escHtml(notePreview)}</div>` : ''}
+        </div>
+        <div class="actions">
+          <button class="btn btn-sm btn-outline" onclick="toggleNotes(${inf.id})" title="Notes">📝</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteInf(${inf.id})" title="Delete">✕</button>
+        </div>
+      </div>
+      ${hasNotes ? `<div class="notes-body" id="notes-${inf.id}">${escHtml(inf.notes)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleNotes(id){
+  const el = document.getElementById('notes-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+function deleteInf(id){
+  influencers = influencers.filter(x => x.id !== id);
+  save();
+  toast('Deleted');
+}
+
+function escHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// single add
+document.getElementById('btn-add').addEventListener('click', ()=>{
+  const name = document.getElementById('input-name').value.trim();
+  const notes = document.getElementById('input-notes').value.trim();
+  if(!name){ toast('Enter a name'); return; }
+  influencers.unshift({
+    id: Date.now(),
+    name,
+    notes,
+    createdAt: new Date().toISOString()
+  });
+  save();
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-notes').value = '';
+  document.getElementById('input-name').focus();
+  toast('Added ✓');
+});
+
+// multi add
+document.getElementById('btn-add-multi').addEventListener('click', ()=>{
+  const raw = document.getElementById('input-multi').value;
+  const lines = raw.split('\n').map(s => s.trim()).filter(Boolean);
+  if(!lines.length){ toast('Enter at least one'); return; }
+  const now = new Date().toISOString();
+  lines.forEach(name => {
+    influencers.unshift({ id: Date.now() + Math.random(), name, notes: '', createdAt: now });
+  });
+  save();
+  document.getElementById('input-multi').value = '';
+  toast(`Added ${lines.length} ✓`);
+});
+
+// tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const v = tab.dataset.tab;
+    document.getElementById('panel-single').style.display = v === 'single' ? '' : 'none';
+    document.getElementById('panel-multi').style.display = v === 'multi' ? '' : 'none';
+  });
+});
+
+// theme
+document.querySelectorAll('.theme-dot').forEach(dot => {
+  dot.addEventListener('click', ()=>{
+    document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    document.documentElement.dataset.theme = dot.dataset.themeVal;
+    localStorage.setItem('wayk_theme', dot.dataset.themeVal);
+  });
+});
+
+// export JSON
+document.getElementById('btn-export-json').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(influencers, null, 2)], {type:'application/json'});
+  download(blob, 'wayk-collect.json');
+});
+
+// export text
+document.getElementById('btn-export-text').addEventListener('click', ()=>{
+  const lines = influencers.map((inf,i)=>{
+    let s = `${i+1}. ${inf.name}`;
+    if(inf.notes) s += ` — ${inf.notes}`;
+    return s;
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  download(blob, 'wayk-collect.txt');
+});
+
+function download(blob, filename){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Downloaded');
+}
+
+// clear
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  if(!influencers.length) return;
+  if(confirm('Delete all influencers?')){
+    influencers = [];
+    save();
+    toast('Cleared');
+  }
+});
+
+// enter key shortcut
+document.getElementById('input-name').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('btn-add').click();
+});
+
+// init
+const savedTheme = localStorage.getItem('wayk_theme') || 'black';
+document.documentElement.dataset.theme = savedTheme;
+document.querySelector(`.theme-dot[data-theme-val="${savedTheme}"]`)?.classList.add('active');
+load();
+render();
+</script>
+</body>
+</html>
