@@ -147,7 +147,9 @@ textarea{resize:vertical;min-height:60px}
 }
 .influencer-item .name{
   font-size:15px;font-weight:500;word-break:break-word;flex:1;
+  cursor:pointer;color:var(--accent);text-decoration:none;
 }
+.influencer-item .name:hover{text-decoration:underline}
 .influencer-item .platform-badge{
   font-size:11px;background:var(--accent-soft);color:var(--accent);
   padding:2px 8px;border-radius:4px;white-space:nowrap;
@@ -282,7 +284,7 @@ function render(){
     return `<div class="influencer-item" data-id="${inf.id}">
       <div class="top">
         <div>
-          <div class="name">${escHtml(inf.name)}</div>
+          <div class="name" onclick="openInfluencer(${inf.id})">${escHtml(inf.name)}</div>
           ${notePreview ? `<div class="notes-toggle" onclick="toggleNotes(${inf.id})">${escHtml(notePreview)}</div>` : ''}
         </div>
         <div class="actions">
@@ -290,7 +292,7 @@ function render(){
           <button class="btn btn-sm btn-danger" onclick="deleteInf(${inf.id})" title="Delete">✕</button>
         </div>
       </div>
-      ${hasNotes ? `<div class="notes-body" id="notes-${inf.id}">${escHtml(inf.notes)}</div>` : ''}
+      ${hasNotes ? `<div class="notes-body" id="notes-${inf.id}">${linkify(escHtml(inf.notes))}</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -310,6 +312,26 @@ function escHtml(s){
   const d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
+}
+
+function linkify(text){
+  return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:var(--accent);text-decoration:underline">$1</a>');
+}
+
+function openInfluencer(id){
+  const inf = influencers.find(x => x.id === id);
+  if(!inf) return;
+  const url = resolveUrl(inf.name, inf.notes);
+  if(url) window.open(url, '_blank');
+}
+
+function resolveUrl(name, notes){
+  const u = (name + ' ' + notes);
+  const urlMatch = u.match(/(https?:\/\/[^\s]+)/i);
+  if(urlMatch) return urlMatch[1];
+  const clean = name.replace(/^@/, '');
+  if(clean.includes('.')) return 'https://' + clean.replace(/^https?:\/\//, '');
+  return `https://instagram.com/${clean}`;
 }
 
 function toast(msg){
