@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { TargetAccount } from '@/types'
 import { Plus, ExternalLink, Trash2, Globe } from 'lucide-react'
 
@@ -18,7 +18,7 @@ export default function TargetsPage() {
   async function loadTargets() {
     setLoading(true)
     try {
-      const { data } = await supabase.from('target_accounts').select('*').order('created_at', { ascending: false })
+      const { data } = await getSupabase().from('target_accounts').select('*').order('created_at', { ascending: false })
       setTargets((data ?? []) as TargetAccount[])
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
@@ -29,7 +29,7 @@ export default function TargetsPage() {
     if (!newUsername.trim()) return
     setAdding(true)
     try {
-      const { error } = await supabase.from('target_accounts').insert({
+      const { error } = await getSupabase().from('target_accounts').insert({
         username: newUsername.trim().replace('@', ''),
         notes: newNotes.trim(),
         scrape_status: 'pending',
@@ -49,7 +49,7 @@ export default function TargetsPage() {
 
   async function deleteTarget(id: string) {
     if (!confirm('Delete this target?')) return
-    await supabase.from('target_accounts').delete().eq('id', id)
+    await getSupabase().from('target_accounts').delete().eq('id', id)
     loadTargets()
   }
 

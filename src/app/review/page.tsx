@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { IGAccount } from '@/types'
 import { ExternalLink, Check, X, MessageSquare } from 'lucide-react'
 
@@ -28,7 +28,7 @@ export default function ReviewPage() {
     setLoading(true)
     try {
       const from = (page - 1) * PAGE_SIZE
-      const { data, count: total } = await supabase
+      const { data, count: total } = await getSupabase()
         .from('ig_accounts')
         .select('*', { count: 'exact' })
         .in('follow_status', ['pending_review', 'approved'])
@@ -47,8 +47,8 @@ export default function ReviewPage() {
     if (status === 'followed') update.followed_at = now
     if (status === 'approved' || status === 'skipped') update.reviewed_at = now
 
-    await supabase.from('ig_accounts').update(update).eq('id', id)
-    await supabase.from('follow_actions').insert({
+    await getSupabase().from('ig_accounts').update(update).eq('id', id)
+    await getSupabase().from('follow_actions').insert({
       account_id: id,
       action: status === 'followed' ? 'follow' : status === 'approved' ? 'approve' : 'skip',
     })
@@ -62,7 +62,7 @@ export default function ReviewPage() {
 
   async function saveNote() {
     if (!noteId) return
-    await supabase.from('ig_accounts').update({ notes: noteText }).eq('id', noteId)
+    await getSupabase().from('ig_accounts').update({ notes: noteText }).eq('id', noteId)
     setNoteId(null)
     setNoteText('')
     loadReviewQueue()

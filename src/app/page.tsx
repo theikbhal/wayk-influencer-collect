@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { Users, Eye, CheckCircle, XCircle, Target } from 'lucide-react'
 import Link from 'next/link'
 
@@ -23,12 +23,13 @@ export default function Dashboard() {
 
   async function loadStats() {
     try {
+      const sb = getSupabase()
       const [total, pending, followed, skipped, targets] = await Promise.all([
-        supabase.from('ig_accounts').select('*', { count: 'exact', head: true }),
-        supabase.from('ig_accounts').select('*', { count: 'exact', head: true }).eq('follow_status', 'pending_review'),
-        supabase.from('ig_accounts').select('*', { count: 'exact', head: true }).eq('follow_status', 'followed'),
-        supabase.from('ig_accounts').select('*', { count: 'exact', head: true }).eq('follow_status', 'skipped'),
-        supabase.from('target_accounts').select('*', { count: 'exact', head: true }),
+        sb.from('ig_accounts').select('*', { count: 'exact', head: true }),
+        sb.from('ig_accounts').select('*', { count: 'exact', head: true }).eq('follow_status', 'pending_review'),
+        sb.from('ig_accounts').select('*', { count: 'exact', head: true }).eq('follow_status', 'followed'),
+        sb.from('ig_accounts').select('*', { count: 'exact', head: true }).eq('follow_status', 'skipped'),
+        sb.from('target_accounts').select('*', { count: 'exact', head: true }),
       ])
       setStats({
         total: total.count ?? 0,

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { IGAccount } from '@/types'
 import { ExternalLink, Search, Filter } from 'lucide-react'
 
@@ -30,7 +30,8 @@ export default function AccountsPage() {
   async function loadAccounts() {
     setLoading(true)
     try {
-      let query = supabase.from('ig_accounts').select('*', { count: 'exact' })
+      const sb = getSupabase()
+      let query = sb.from('ig_accounts').select('*', { count: 'exact' })
 
       if (statusFilter !== 'all') query = query.eq('follow_status', statusFilter)
       if (sourceFilter !== 'all') query = query.eq('source', sourceFilter)
@@ -54,7 +55,8 @@ export default function AccountsPage() {
     setPage(1)
     setLoading(true)
     try {
-      let query = supabase.from('ig_accounts').select('*', { count: 'exact' })
+      const sb = getSupabase()
+      let query = sb.from('ig_accounts').select('*', { count: 'exact' })
       if (search) {
         query = query.or(`username.ilike.%${search}%,display_name.ilike.%${search}%,notes.ilike.%${search}%`)
       }
