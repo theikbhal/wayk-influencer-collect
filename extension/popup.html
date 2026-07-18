@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wayk Collector</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #1a1a1a;
+      --border: #2a2a2a;
+      --text: #e5e5e5;
+      --muted: #888;
+      --accent: #c13584;
+      --accent2: #e1306c;
+      --green: #22c55e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 360px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      font-weight: bold;
+    }
+    .header h1 { font-size: 15px; font-weight: 700; flex: 1; }
+    .header .status { font-size: 11px; color: var(--muted); }
+
+    .section { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .section-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+    .stats { display: flex; gap: 8px; }
+    .stat {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-value { font-size: 18px; font-weight: 700; }
+    .stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: opacity 0.15s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+    }
+    .btn-primary:disabled { opacity: 0.4; cursor: default; }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-danger {
+      background: #ef444420;
+      color: #ef4444;
+      border: 1px solid #ef444430;
+      margin-top: 6px;
+    }
+
+    .page-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--surface);
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .page-info .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .dot.active { background: var(--green); }
+    .dot.inactive { background: #555; }
+
+    .result {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-top: 8px;
+      display: none;
+    }
+    .result.success { display: block; background: var(--green); color: white; }
+    .result.error { display: block; background: #ef4444; color: white; }
+    .result.info { display: block; background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+    .footer {
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    .select-target {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">W</div>
+    <h1>Wayk Collector</h1>
+    <div class="status" id="pageStatus">Not on IG</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Quick Stats</div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="statTotal">-</div>
+        <div class="stat-label">Collected</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statPending">-</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statFollowed">-</div>
+        <div class="stat-label">Followed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Instagram Page</div>
+    <div id="pageInfo">
+      <div class="page-info">
+        <span class="dot inactive" id="igDot"></span>
+        <span id="igUrl">Not detected</span>
+      </div>
+    </div>
+
+    <select class="select-target" id="targetSelect">
+      <option value="">Select target account...</option>
+    </select>
+
+    <button class="btn btn-primary" id="btnScrape" disabled>
+      Scrape Followers
+    </button>
+    <button class="btn btn-secondary" id="btnRefresh" style="margin-top:6px">
+      Refresh Stats
+    </button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="section" style="display:flex;gap:6px;border-bottom:none">
+    <a href="https://wayk-influencer-collect.vercel.app" target="_blank" class="btn btn-secondary" style="font-size:12px;padding:8px">
+      Open Dashboard
+    </a>
+    <button class="btn btn-secondary" id="btnOptions" style="font-size:12px;padding:8px;flex:0">
+      ⚙
+    </button>
+  </div>
+
+  <div class="footer">
+    Wayk Collector v1.0.0
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

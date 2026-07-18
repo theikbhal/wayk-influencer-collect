@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wayk Collector - Options</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d0d0d;
+      color: #e5e5e5;
+      padding: 24px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 20px; margin-bottom: 20px; }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; }
+    input, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      background: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #e5e5e5;
+      font-size: 13px;
+    }
+    .btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #c13584, #e1306c);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: #1a1a1a;
+      color: #888;
+      border: 1px solid #2a2a2a;
+    }
+    .status { font-size: 12px; color: #22c55e; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Wayk Collector Settings</h1>
+
+  <div class="card">
+    <label>Supabase URL</label>
+    <input type="text" id="supabaseUrl" value="https://fuywzjtfspfdpctrlxtj.supabase.co" disabled>
+  </div>
+
+  <div class="card">
+    <label>Auto-scroll speed (ms between scrolls)</label>
+    <input type="number" id="scrollSpeed" value="800" min="200" max="5000">
+  </div>
+
+  <div class="card">
+    <label>Max followers to scrape per session</label>
+    <input type="number" id="maxScrape" value="500" min="10" max="5000">
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:16px">
+    <button class="btn" id="saveBtn">Save Settings</button>
+    <button class="btn btn-secondary" id="resetBtn">Reset Defaults</button>
+  </div>
+  <div id="saveStatus" class="status"></div>
+
+  <script>
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const settings = {
+        scrollSpeed: parseInt(document.getElementById('scrollSpeed').value) || 800,
+        maxScrape: parseInt(document.getElementById('maxScrape').value) || 500,
+      };
+      chrome.storage.local.set({ waykSettings: settings }, () => {
+        document.getElementById('saveStatus').textContent = 'Settings saved!';
+        setTimeout(() => document.getElementById('saveStatus').textContent = '', 2000);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('scrollSpeed').value = 800;
+      document.getElementById('maxScrape').value = 500;
+      document.getElementById('saveBtn').click();
+    });
+
+    // Load saved settings
+    chrome.storage.local.get('waykSettings', (result) => {
+      if (result.waykSettings) {
+        document.getElementById('scrollSpeed').value = result.waykSettings.scrollSpeed || 800;
+        document.getElementById('maxScrape').value = result.waykSettings.maxScrape || 500;
+      }
+    });
+  </script>
+</body>
+</html>
